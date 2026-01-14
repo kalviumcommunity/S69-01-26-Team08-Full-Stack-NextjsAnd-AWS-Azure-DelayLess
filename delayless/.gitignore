@@ -43,3 +43,5 @@ next-env.d.
 # Ignore environment files
 .env*
 !.env.example
+
+node_modules

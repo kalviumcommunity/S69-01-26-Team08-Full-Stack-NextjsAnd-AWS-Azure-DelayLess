@@ -1,0 +1,43 @@
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 48px;
+  background: linear-gradient(90deg, #020617, #0f172a);
+  color: white;
+
+  animation: slideDown 0.6s ease-out;
+}
+
+.brand {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.links {
+  display: flex;
+  gap: 24px;
+}
+
+.links a {
+  text-decoration: none;
+  color: #c7d2fe;
+  font-size: 15px;
+  transition: color 0.2s ease;
+}
+
+.links a:hover {
+  color: white;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

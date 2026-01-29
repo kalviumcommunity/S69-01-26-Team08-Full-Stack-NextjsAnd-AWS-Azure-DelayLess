@@ -4,3 +4,5 @@ export function getDelaySeverity(delay: number) {
   if (delay <= 30) return "medium";
   return "high";
 }
+
+

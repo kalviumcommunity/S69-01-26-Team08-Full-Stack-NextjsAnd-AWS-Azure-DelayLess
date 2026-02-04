@@ -15,3 +15,4 @@ export const trains = [
     delayMinutes: 35,
   },
 ];
+

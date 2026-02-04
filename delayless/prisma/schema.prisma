@@ -1,18 +1,34 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
 
+model Station {
+  id    Int     @id @default(autoincrement())
+  name  String
+  code  String  @unique
+  line  String
+}
 
 model Train {
-  id          String   @id @default(uuid())
-  trainNo     String
+  id          Int     @id @default(autoincrement())
+  trainNumber String  @unique
   name        String
-  delayMin    Int
-  createdAt   DateTime @default(now())
+  line        String
+}
+
+model Schedule {
+  id            Int     @id @default(autoincrement())
+  delayMinutes  Int
+  trainId       Int
+  sourceId      Int
+  destinationId Int
+
+  train        Train   @relation(fields: [trainId], references: [id])
+  source       Station @relation(fields: [sourceId], references: [id])
+  destination  Station @relation(fields: [destinationId], references: [id])
 }

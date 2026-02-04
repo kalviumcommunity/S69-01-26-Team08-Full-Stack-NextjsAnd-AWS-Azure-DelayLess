@@ -2,17 +2,28 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.station.createMany({
-    data: [
-      { name: "Mumbai CST", code: "CST" },
-      { name: "Thane", code: "TNA" }
-    ]
+  const mumbai = await prisma.station.create({
+    data: { name: "Mumbai CST", code: "CST", line: "Central" }
   });
 
-  await prisma.train.create({
+  const thane = await prisma.station.create({
+    data: { name: "Thane", code: "TNA", line: "Central" }
+  });
+
+  const train = await prisma.train.create({
     data: {
       trainNumber: "12345",
-      name: "Fast Local"
+      name: "Fast Local",
+      line: "Central"
+    }
+  });
+
+  await prisma.schedule.create({
+    data: {
+      delayMinutes: 10,
+      trainId: train.id,
+      sourceId: mumbai.id,
+      destinationId: thane.id
     }
   });
 }

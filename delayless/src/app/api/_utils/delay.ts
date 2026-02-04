@@ -5,4 +5,3 @@ export function getDelaySeverity(delay: number) {
   return "high";
 }
 
-

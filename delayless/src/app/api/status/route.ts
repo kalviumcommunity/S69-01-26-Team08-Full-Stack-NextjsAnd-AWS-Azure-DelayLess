@@ -17,7 +17,6 @@ export async function GET(req: NextRequest) {
     return failure("Train not found", 404);
   }
 
-  
   return success(
     {
       trainNo: train.trainNo,

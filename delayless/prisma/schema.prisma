@@ -1,3 +1,9 @@
+enum CrowdLevel {
+  Low
+  Medium
+  High
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,51 +19,75 @@ model User {
   email     String   @unique
   createdAt DateTime @default(now())
 
-  routes    RouteSuggestion[]
+  routes RouteSuggestion[]
 }
 
 model Station {
-  id        Int      @id @default(autoincrement())
-  name      String
-  code      String   @unique
+  id   Int    @id @default(autoincrement())
+  name String
+  code String @unique
+
+  departures Schedule[] @relation("DepartureStation")
+  arrivals   Schedule[] @relation("ArrivalStation")
 }
 
 model Train {
-  id          Int      @id @default(autoincrement())
-  trainNumber String   @unique
+  id          Int    @id @default(autoincrement())
+  trainNumber String @unique
   name        String
 
-  schedules   Schedule[]
+  schedules Schedule[]
+  statuses  LiveStatus[]
 }
 
 model Schedule {
-  id          Int      @id @default(autoincrement())
-  trainId     Int
-  sourceId    Int
+  id Int @id @default(autoincrement())
+
+  trainId       Int
+  sourceId      Int
   destinationId Int
+
   departureTime DateTime
   arrivalTime   DateTime
 
-  train        Train    @relation(fields: [trainId], references: [id])
+  train Train @relation(fields: [trainId], references: [id])
+
+  source Station @relation("DepartureStation", fields: [sourceId], references: [id])
+
+  destination Station @relation("ArrivalStation", fields: [destinationId], references: [id])
 }
 
 model LiveStatus {
-  id          Int      @id @default(autoincrement())
-  trainId     Int
-  delayMinutes Int
-  crowdLevel  String   @check(crowdLevel IN ("Low", "Medium", "High"))
-  updatedAt   DateTime @default(now())
+  id Int @id @default(autoincrement())
 
-  train       Train    @relation(fields: [trainId], references: [id])
+  trainId      Int
+  delayMinutes Int
+  crowdLevel   CrowdLevel
+  updatedAt    DateTime   @default(now())
+
+  train Train @relation(fields: [trainId], references: [id])
 }
 
 model RouteSuggestion {
-  id        Int      @id @default(autoincrement())
-  userId    Int
+  id     Int @id @default(autoincrement())
+  userId Int
+
   fromStation String
   toStation   String
   suggestion  String
+
   createdAt DateTime @default(now())
 
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model CommunityReport {
+  id          Int      @id @default(autoincrement())
+  trainNumber String
+  station     String
+  delayMins   Int
+  crowdLevel  CrowdLevel
+
+  createdAt   DateTime @default(now())
 }

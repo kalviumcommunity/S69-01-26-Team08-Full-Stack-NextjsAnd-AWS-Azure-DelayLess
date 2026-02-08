@@ -41,5 +41,18 @@ a {
   }
 }
 
+.navlink {
+  @apply text-neutral-600 hover:text-orange-600 transition relative;
+}
+
+.navlink::after {
+  content: "";
+  @apply absolute left-0 -bottom-1 w-0 h-0.5 bg-orange-500 transition-all;
+}
+
+.navlink:hover::after {
+  @apply w-full;
+}
+
 
 

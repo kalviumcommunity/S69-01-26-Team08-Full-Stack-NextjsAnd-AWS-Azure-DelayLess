@@ -1,34 +1,93 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+enum CrowdLevel {
+  Low
+  Medium
+  High
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  routes RouteSuggestion[]
+}
+
 model Station {
-  id    Int     @id @default(autoincrement())
-  name  String
-  code  String  @unique
-  line  String
+  id   Int    @id @default(autoincrement())
+  name String
+  code String @unique
+
+  departures Schedule[] @relation("DepartureStation")
+  arrivals   Schedule[] @relation("ArrivalStation")
 }
 
 model Train {
-  id          Int     @id @default(autoincrement())
-  trainNumber String  @unique
+  id          Int    @id @default(autoincrement())
+  trainNumber String @unique
   name        String
-  line        String
+
+  schedules Schedule[]
+  statuses  LiveStatus[]
 }
 
 model Schedule {
-  id            Int     @id @default(autoincrement())
-  delayMinutes  Int
+  id Int @id @default(autoincrement())
+
   trainId       Int
   sourceId      Int
   destinationId Int
 
-  train        Train   @relation(fields: [trainId], references: [id])
-  source       Station @relation(fields: [sourceId], references: [id])
-  destination  Station @relation(fields: [destinationId], references: [id])
+  departureTime DateTime
+  arrivalTime   DateTime
+
+  train Train @relation(fields: [trainId], references: [id])
+
+  source Station @relation("DepartureStation", fields: [sourceId], references: [id])
+
+  destination Station @relation("ArrivalStation", fields: [destinationId], references: [id])
+}
+
+model LiveStatus {
+  id Int @id @default(autoincrement())
+
+  trainId      Int
+  delayMinutes Int
+  crowdLevel   CrowdLevel
+  updatedAt    DateTime   @default(now())
+
+  train Train @relation(fields: [trainId], references: [id])
+}
+
+model RouteSuggestion {
+  id     Int @id @default(autoincrement())
+  userId Int
+
+  fromStation String
+  toStation   String
+  suggestion  String
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model CommunityReport {
+  id          Int      @id @default(autoincrement())
+  trainNumber String
+  station     String
+  delayMins   Int
+  crowdLevel  CrowdLevel
+
+  createdAt   DateTime @default(now())
 }

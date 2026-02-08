@@ -1,30 +1,34 @@
-import { NextRequest } from "next/server";
-import { success, failure } from "../_utils/response";
-import { trains } from "../_mock/trains";
-import { getDelaySeverity } from "../_utils/delay";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const trainNo = searchParams.get("trainNo");
-
-  if (!trainNo) {
-    return failure("trainNo query parameter is required", 400);
-  }
-
-  const train = trains.find(t => t.trainNo === trainNo);
-
-  if (!train) {
-    return failure("Train not found", 404);
-  }
-
-  return success(
-    {
-      trainNo: train.trainNo,
-      name: train.name,
-      delayMinutes: train.delayMinutes,
-      severity: getDelaySeverity(train.delayMinutes),
-      lastUpdated: new Date().toISOString(),
-    },
-    "Train status fetched"
-  );
+export async function GET() {
+  return NextResponse.json({
+    trains: [
+      {
+        trainNumber: "12627",
+        name: "Karnataka Express",
+        delay: 12,
+        crowdLevel: "High",
+        status: "Running",
+        progress: 65,
+        route: [
+          { station: "Bangalore", time: "10:00" },
+          { station: "Nagpur", time: "16:00" },
+          { station: "Delhi", time: "22:00" }
+        ]
+      },
+      {
+        trainNumber: "12009",
+        name: "Shatabdi Express",
+        delay: 0,
+        crowdLevel: "Low",
+        status: "On Time",
+        progress: 30,
+        route: [
+          { station: "Mysore", time: "08:00" },
+          { station: "Bangalore", time: "10:30" },
+          { station: "Chennai", time: "15:00" }
+        ]
+      }
+    ]
+  });
 }
